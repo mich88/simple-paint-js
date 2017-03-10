@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Paint</title>
+
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        overflow: hidden;
+        height: 100%;
+    }
+    .inputs {
+        position: absolute;
+    }
+    </style>
+</head>
+<body>
+    <div class="inputs"><input type="color"><input type="number" min="1" value="1"></div>
+    <canvas id="canvas"></canvas>
+
+<script>
+    let colorPicker = document.querySelector('input[type="color"]');
+    let linePicker = document.querySelector('input[type="number"]');
+
+    let c = document.querySelector('#canvas');
+    c.width = document.body.clientWidth;
+    c.height = document.body.clientHeight;
+
+    let ctx = c.getContext("2d");
+    let color = colorPicker.value;
+    let line = linePicker.value;
+    let focus = true;
+    let clicked = false;
+
+    function draw(e) {
+        if (focus && clicked) {
+            ctx.beginPath();
+            ctx.lineWidth = line;
+            ctx.strokeStyle = color;
+            ctx.lineCap = 'round';
+            ctx.moveTo(e.layerX-e.movementX, e.layerY-e.movementY);
+            ctx.lineTo(e.layerX, e.layerY);
+            ctx.stroke();
+        }
+    }
+
+    function pickColor() {
+        color = this.value;
+    }
+
+    function pickline() {
+        line = this.value;
+    }
+
+     function clicking() {
+        clicked = true;
+    }
+
+    function notClicking() {
+        clicked = false;
+    }
+    
+    function inFocus() {
+        focus = true;
+    }
+
+    function notInFocus() {
+        focus = false;
+        clicked = false;
+    }
+
+    window.addEventListener('mousewheel', function(e) {
+        if(e.deltaY < 0) {
+            line++;
+        } else if(e.deltaY > 0 && line > 1) {
+            line--;
+        }
+        linePicker.value = line;
+    });
+
+    c.addEventListener('mouseup', notClicking);     
+    c.addEventListener('mousedown', clicking);    
+    c.addEventListener('mouseenter', inFocus);
+    c.addEventListener('mouseleave', notInFocus);
+    c.addEventListener('mousemove', draw);
+    colorPicker.addEventListener('change', pickColor);
+    linePicker.addEventListener('change', pickline);
+</script>
+</body>
+</html>
